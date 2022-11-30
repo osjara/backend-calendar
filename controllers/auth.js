@@ -1,42 +1,40 @@
 const { response } = require('express');
 const bcrypt = require('bcryptjs');
-const User = require('../models/User');
-const { generarJWT } = require('../helpers/jwt');
+const Usuario = require('../models/Usuario');
 
 
-const createUser = async(req, res = response) => {
+const crearUsuario = async(req, res = response) => {
 
-    const { email, password } = req.body;
+    // const { email, password } = req.body;
+
+    const usuario = new Usuario(req.body);
 
     try {
 
-        let user = await User.findOne({ email });
+        // let user = await User.findOne({ email });
         
-        if (user) {
-            return res.status(400).json({
-                ok: false,
-                msg: 'User already exists'
-            });
-        }
+        // if (user) {
+        //     return res.status(400).json({
+        //         ok: false,
+        //         msg: 'User already exists'
+        //     });
+        // }
 
-        user = new User( req.body );
+        // user = new User( req.body );
      
         // Encriptar contraseña
-        const salt = await bcrypt.genSalt();
-        user.password = await bcrypt.hashSync(password, salt);
+        // const salt = await bcrypt.genSalt();
+        // user.password = await bcrypt.hashSync(password, salt);
 
 
 
-        await user.save();
+        await usuario.save();
      
-        // Generar JWT
-        const token = await generarJWT( user.id, user.name ); 
 
          res.status(201).json({
-             ok: true,
-             uid: user.id,
-             name: user.name,
-             token
+             ok: true
+            //  uid: user.id,
+            //  name: user.name,
          })
         
     } catch (error) {
@@ -49,19 +47,7 @@ const createUser = async(req, res = response) => {
 
 }
 
-const revalidarToken = async (req, res) => {
 
-    const { uid, name } = req;
-
-    const token = await generarJWT( uid, name ); 
-
-    res.json({
-        ok: true,
-        uid, name,
-        token
-    })
-
-}
 
 
 const loginUser = async (req, res) => {
@@ -88,14 +74,11 @@ const loginUser = async (req, res) => {
         })
     }
 
-    // Generar JWT
-    const token = await generarJWT( user.id, user.name ); 
 
     res.json({
         ok: true,
         uid: user.id,
         name: user.name,
-        token
     })
     
    } catch (error) {
@@ -116,8 +99,7 @@ const obtenerUsuarios = async(req, res = response) => {
 
 
 module.exports = {
-    createUser,
+    crearUsuario,
     loginUser,
-    revalidarToken,
     obtenerUsuarios
 }
