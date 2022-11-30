@@ -5,26 +5,24 @@ const Usuario = require('../models/Usuario');
 
 const crearUsuario = async(req, res = response) => {
 
-    // const { email, password } = req.body;
-
-    const usuario = new Usuario(req.body);
+    const { email, direccion, password } = req.body;
 
     try {
 
-        // let user = await User.findOne({ email });
+        let usuario = await Usuario.findOne({ email });
         
-        // if (user) {
-        //     return res.status(400).json({
-        //         ok: false,
-        //         msg: 'User already exists'
-        //     });
-        // }
+        if (usuario) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'User already exists'
+            });
+        }
 
-        // user = new User( req.body );
+        usuario = new Usuario(req.body);
      
         // Encriptar contraseña
-        // const salt = await bcrypt.genSalt();
-        // user.password = await bcrypt.hashSync(password, salt);
+        const salt = await bcrypt.genSalt();
+        usuario.password = await bcrypt.hashSync(password, salt);
 
 
 
@@ -32,9 +30,8 @@ const crearUsuario = async(req, res = response) => {
      
 
          res.status(201).json({
-             ok: true
-            //  uid: user.id,
-            //  name: user.name,
+             ok: true,
+            uid: usuario.id
          })
         
     } catch (error) {
@@ -47,38 +44,34 @@ const crearUsuario = async(req, res = response) => {
 
 }
 
-
-
-
 const loginUser = async (req, res) => {
 
     const { email, password } = req.body;
 
    try {
-    const user = await User.findOne({ email });
+    const usuario = await Usuario.findOne({ email });
         
-    if (!user) {
+    if (!usuario) {
         return res.status(400).json({
             ok: false,
-            msg: 'The email is not Registered'
+            msg: 'El Email no esta Registrado'
         });
     }
 
     //Confirmar los password
-    const validPassword = bcrypt.compareSync( password, user.password );
+    const validPassword = bcrypt.compareSync( password, usuario.password );
 
     if (!validPassword) {
         return res.status(400).json({
             ok: false,
-            msg: 'Incorrect Password'
+            msg: 'Password incorrecto'
         })
     }
 
 
     res.json({
         ok: true,
-        uid: user.id,
-        name: user.name,
+        uid: usuario.id,
     })
     
    } catch (error) {

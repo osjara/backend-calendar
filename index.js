@@ -21,6 +21,8 @@ app.use( express.json() );
 
 //rutas
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/inside', require('./routes/inside'));
+app.use('/api/admin', require('./routes/admin'));
 
 app.get('*', ( req, res)=>{
     res.sendFile( __dirname + '/public/index.html');
